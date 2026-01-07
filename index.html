@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Droit Romain & Histoire des Obligations</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+        }
+
+        /* Barre de progression avec % */
+        .progress-wrapper {
+            position: sticky;
+            top: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar-container {
+            flex-grow: 1;
+            background: #eee;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #progress-text {
+            font-weight: bold;
+            min-width: 45px;
+            color: var(--accent);
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .option {
+            display: block;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #eee;
+            transition: 0.2s;
+        }
+
+        .option:hover { background: #f0f4f8; }
+
+        input[type="checkbox"] { margin-right: 12px; transform: scale(1.2); }
+
+        /* Correction */
+        .text-correct { color: var(--success) !important; font-weight: bold; }
+        .text-wrong { color: var(--error) !important; font-weight: bold; }
+        .bg-correct { background-color: #d4edda !important; border-color: #c3e6cb; }
+        .bg-wrong { background-color: #f8d7da !important; border-color: #f5c6cb; }
+
+        .correction-note {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #eaf4ff;
+            border-left: 5px solid var(--accent);
+            display: none;
+        }
+
+        #submit-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        #submit-btn:hover { background: #1a252f; }
+
+        .final-score {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Droit Romain : Contrats et Délits</h1>
+        <p>Entraînement 60 questions (V2)</p>
+    </header>
+
+    <div class="progress-wrapper">
+        <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div id="progress-text">0%</div>
+    </div>
+
+    <form id="quiz-form">
+        <div id="quiz-content"></div>
+        <button type="button" id="submit-btn" onclick="validateQuiz()">Valider mes réponses et voir mon score</button>
+    </form>
+
+    <div id="finalSection" class="final-score">
+        <h2 id="scoreDisplay"></h2>
+        <p id="scoreMsg"></p>
+        <button onclick="location.reload()" style="background: white; color: var(--primary); padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Recommencer</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "1. Les vices du consentement en droit romain sont :", options: ["le dol (au sens de la faute lourde)", "le dol (au sens du mensonge)", "l'erreur (obstacle)", "la crainte révérencielle"], correct: [1, 2] },
+        { q: "2. En droit romain des obligations, le louage de services :", options: ["ne permet pas de recruter des ouvriers", "permet d'employer des esclaves", "permet de recruter un avocat", "ne permet pas d'engager un avocat"], correct: [1, 3] },
+        { q: "3. Le proto-consensualisme de l'époque féodale :", options: ["est un retour au consensualisme du droit romain archaïque", "correspond à un engagement par promesse", "marque une tendance à la laïcisation du serment promissoire", "est perceptible dans une pratique résiduelle appelée « contracta »"], correct: [1, 2] },
+        { q: "4. La stipulatio :", options: ["est une forme de promesse qui ressemble à la fides facta du Moyen Âge", "a donné naissance à la sponsio", "est un mode de contracter basé sur un serment", "désigne une clause contractuelle de résolution"], correct: [0, 2] },
+        { q: "5. En droit romain, la sponsio :", options: ["permet de « sponsoriser » les clients", "est une manière de s'obliger par un contrat réel", "suppose que le créancier interroge son débiteur oralement en employant une formule", "est la base historique de la stipulatio"], correct: [2, 3] },
+        { q: "6. Le mutuum est :", options: ["un contrat reconnu civilement, puis sanctionné seulement moralement", "un contrat consensuel", "un prêt de consommation", "un prêt à la consommation"], correct: [2, 3] },
+        { q: "7. Le préteur, qui joue un rôle important dans le droit des obligations à Rome :", options: ["est un pontife gardien des coutumes", "est un magistrat élu qui fixe les conditions du procès", "est un juge du fond", "prête de l'argent"], correct: [1] },
+        { q: "8. La loi Poetalia Papiria marque une étape permettant de distinguer :", options: ["le contrat et le délit", "l'indemnité et l'amende", "la contrainte physique et la sanction morale", "la situation de l'obligé et la notion d'obligation"], correct: [3] },
+        { q: "9. En droit romain, la fiducie :", options: ["accompagne l'essor des contrats consensuels", "est identique au trust en droit anglo-saxon", "désigne une personne de confiance dans la famille", "dérive de l'exigence de loyauté, base des contrats réels"], correct: [3] },
+        { q: "10. Dans l'ancien droit pénal, face à l'action « de pauperie », le propriétaire peut :", options: ["verser des dommages-intérêts", "payer l'amende ou s'exiler", "effectuer un abandon noxal", "abandonner le fils de famille"], correct: [0, 2] },
+        { q: "11. En droit romain, le délit d'injuria a été étendu par le préteur :", options: ["aux quasi-délits", "au sacrilège", "aux atteintes morales", "au crime de lèse-majesté"], correct: [2] },
+        { q: "12. En matière de délits à l'époque franque :", options: ["on ne s'intéresse pas à l'élément intentionnel", "on s'intéresse à l'élément matériel", "on s'intéresse plus à l'intention qu'au matériel", "on s'intéresse autant aux deux"], correct: [0, 1] },
+        { q: "13. Le Digeste :", options: ["date de l'époque de Dioclétien", "est un recueil de droit romain archaïque", "date de l'époque de Justinien (VIe siècle)", "est une école de pensée"], correct: [2] },
+        { q: "14. À Rome, le foenus désigne :", options: ["un prêt à taux réduit", "le prêt à la consommation", "le prêt à intérêt", "une opération similaire au mutuum"], correct: [2, 3] },
+        { q: "15. Selon un principe du Digeste :", options: ["l'action publique s'éteint par la mort du coupable", "l'action publique suit le coupable", "« La mort commence avec le crime »", "« Le crime cesse avec la peine »"], correct: [0] },
+        { q: "16. À Rome, l'origine de la noxalité se situe :", options: ["dans l'idée de responsabilité individuelle", "dans une conception archaïque du délit", "dans le droit de la victime de s'emparer du coupable", "dans le besoin de venger la perte"], correct: [1, 2] },
+        { q: "17. La renaissance de l'étude du droit romain en Europe :", options: ["correspond à l'apparition des monastères", "inspire les travaux des canonistes", "est liée à l'imprimerie", "permet de changer les mœurs"], correct: [1] },
+        { q: "18. En droit romain, le id quod interest :", options: ["n'est pas similaire au quanti ea res est", "correspond à un barème", "est un mode de calcul du taux d'intérêt", "est l'intérêt que la victime aurait eu à éviter le dommage"], correct: [3] },
+        { q: "19. En droit romain, le contrat de societas :", options: ["attribue les bénéfices au fondateur", "est un contrat consensuel", "est fréquent dans la pratique commerciale", "est un prolongement du rôle du paterfamilias"], correct: [1, 3] },
+        { q: "20. Celui qui commet un délit peut être déclaré irresponsable :", options: ["s'il a 10 ans", "s'il a fumé de l'opium", "s'il s'agit d'une femme", "s'il s'agit d'un impubère"], correct: [3] },
+        { q: "21. Au bas Moyen Âge, les romanistes et canonistes prennent en compte :", options: ["l'excuse de nécessité", "la légitime défense", "le rôle de l'intention", "le lien de causalité"], correct: [2] },
+        { q: "22. Le prêt à intérêt :", options: ["correspond au nauticum foenus", "est interdit par les pontifes", "est permis par les Dix commandements", "est prévu dans le mutuum initial"], correct: [0] },
+        { q: "23. En droit romain des contrats, les vices cachés :", options: ["concernent la période d'exécution", "ne changent rien à l'utilité", "englobent la violence", "ne sont pas une forme de lésion"], correct: [3] },
+        { q: "24. Antérieurement à la loi Poetelia Papiria, l'obligé s'engage par :", options: ["le nexum", "la vente solo consensu", "la locatio-conductio", "le mandat formel"], correct: [0] },
+        { q: "25. Selon saint Ambroise :", options: ["Personne n'est responsable si la volonté suit son chemin", "il n'y a pas de culpabilité sans faute lourde", "l'on peut être responsable et non coupable", "il n'y a pas de responsabilité sans faute"], correct: [3] },
+        { q: "26. La laïcisation du droit des obligations signifie :", options: ["la synthèse droit civil / droit naturel", "que l'on ne peut plus jurer", "l'anticipation d'un code européen", "la réduction du rôle des tribunaux d'Église"], correct: [3] },
+        { q: "27. En droit franc, le wergeld désigne :", options: ["le mercenaire", "une composition versée en cas d'homicide", "la contrepartie numéraire", "le coût de la main-d'œuvre"], correct: [1] },
+        { q: "28. En droit romain classique, la fiducie :", options: ["correspond au trust anglais", "est une série de contrats consensuels", "permet de transférer la propriété avec obligation morale de retour", "permet d'obtenir des crédits d'impôt"], correct: [2] },
+        { q: "29. Au bas Moyen Âge, la théorie du libre arbitre :", options: ["reconnaît des contrats sui generis", "combat les hérésies", "suscite la réflexion sur les bonnes mœurs", "renforce l'idée de responsabilité"], correct: [2, 3] },
+        { q: "30. À Rome, l'action d'injuria :", options: ["dure un mois", "dure un an", "se transmet aux héritiers (victime)", "se transmet aux héritiers (auteur)"], correct: [1] },
+        { q: "31. L'abandon noxal est un procédé :", options: ["donnant considération à l'animal", "du droit romain", "où le paterfamilias abandonne un fils/esclave", "fondé sur une idée canonique"], correct: [1, 2] },
+        { q: "32. Le serment promissoire :", options: ["est un mode réel", "est un mode formaliste et solennel à l'époque franque", "est utilisé par les procureurs", "consiste en gestes consensuels"], correct: [1] },
+        { q: "33. En droit romain, la notion de vol :", options: ["est le furtum (chose volée)", "n'est pas l'escroquerie", "est plus large que la notion moderne", "englobe l'abus de confiance/usage"], correct: [2, 3] },
+        { q: "34. En droit romain, le procès s'organise :", options: ["en 3 étapes", "devant le juge qui accorde l'action", "devant le préteur qui tranche", "en phase in jure et apud iudicem"], correct: [3] },
+        { q: "35. En droit romain, l'injuria peut désigner :", options: ["la blessure physique", "la sorcellerie", "le tort aux animaux", "l'adultère"], correct: [0] },
+        { q: "36. En matière répressive à l'époque franque :", options: ["le roi seul punit", "l'autorité n'incite pas à la vengeance", "l'autorité intervient rarement dans les conflits familiaux", "le talion est la seule voie"], correct: [2] },
+        { q: "37. La pratique du serment promissoire :", options: ["dispensée par le juge du droit", "empêche les ariens d'agir", "signifie prendre Dieu à témoin", "est perpétuelle"], correct: [2] },
+        { q: "38. Le prêt à la production correspond :", options: ["au prêt maritime", "à un commodatum", "à un prêt sans intérêt", "au prêt d'un outil"], correct: [0, 3] },
+        { q: "39. En droit romain, le contrat de societas :", options: ["est une personne morale", "limite la responsabilité aux apports", "permet de mettre en commun des apports", "n'est pas intuitu personae"], correct: [2] },
+        { q: "40. Au bas Moyen Âge la cause de l'obligation :", options: ["fait réfléchir les canonistes sur la moralité", "est une condition de forme", "correspond à l'objet", "doit être une bonne cause"], correct: [0, 3] },
+        { q: "41. En droit romain, la notion de vices cachés :", options: ["est utilisée par les édiles curules", "signifie renoncement du vendeur", "est un accord amiable", "est invoquée pour les organes"], correct: [0] },
+        { q: "42. Les délits civils de la loi des XII Tables sont :", options: ["la corruption", "le bannum", "les lésions corporelles", "les malédictions/sorcellerie"], correct: [2, 3] },
+        { q: "43. À Rome, l'expensilatio :", options: ["est un contrat littéral", "est un prêt agricole", "est l'expansion de la volonté", "rend compte d'un mandat"], correct: [0] },
+        { q: "44. Le droit romain savant (XIIIe s.) :", options: ["entraîne une réflexion sur le consentement", "réagit contre le droit canon", "passe par les huissiers", "est ratifié par Philippe le Bel"], correct: [0] },
+        { q: "45. En droit romain, le développement du louage :", options: ["afferme les terres des soldats", "est utile à l'expansion urbaine", "donne l'abusus au locataire", "n'encadre pas l'ouvrage futur"], correct: [1] },
+        { q: "46. Quand s'éloigne l'idée de vengeance :", options: ["talion interdit", "la poena s'efface devant la rei persecurio", "rapprochement civil/commercial", "le juge accorde plus d'indemnités"], correct: [1, 3] },
+        { q: "47. Le serment simplifié au bas Moyen Âge :", options: ["est réel", "est corporaliter praestitum", "s'accompagne du toucher d'une chose sainte", "ne prononce plus le nom de Dieu"], correct: [1, 2] },
+        { q: "48. Dans la société franque :", options: ["la terre est secondaire", "peu de liens parents", "débits = vente/échange", "contrats et délits sont distingués"], correct: [3] },
+        { q: "49. La procédure inquisitoire (XIIIe s.) conduit à :", options: ["ajout sanction civile", "distinction peine publique / dommages-intérêts", "fusion action publique/civile", "assimilation peine/dommages"], correct: [1] },
+        { q: "50. Le nexum :", options: ["prêt maritime", "se forme per aes et libram", "ancêtre noxalité", "contrat consensuel"], correct: [1] },
+        { q: "51. Le mutuum :", options: ["porte sur chose de faible valeur", "porte sur res mancipi", "entre parents/enfants", "est consensuel"], correct: [0] },
+        { q: "52. En cas de délit civil, le coupable :", options: ["paie juste une somme", "verse des dommages-intérêts (tarif légal)", "est interrogé", "est frappé d'infamie"], correct: [1, 3] },
+        { q: "53. L'usage de la simple promesse :", options: ["contourne la synallagmatique", "ne crée pas d'obligation", "fait réfléchir sur l'objet", "accélère le consensualisme"], correct: [3] },
+        { q: "54. L'actio legis Aquiliae est :", options: ["unilatérale", "administrative", "privée", "pénale au double"], correct: [2, 3] },
+        { q: "55. En droit romain, la « jurisprudence » désigne :", options: ["opinions des jurisconsultes", "la coutume", "décisions du préteur", "discours du tribun"], correct: [0] },
+        { q: "56. L'indemnité équivalente au seul dommage est allouée :", options: ["incendie palais", "menace d'écroulement voisin", "vol quadrupède", "empoisonnement eaux"], correct: [1] },
+        { q: "57. Les délits XII Tables englobent :", options: ["atteintes pudeur", "les soufflets (amende)", "vie privée", "violences sans préjudice"], correct: [1] },
+        { q: "58. Le dépôt :", options: ["pour témoigner", "oblige à restituer en bon état", "est formel", "est toujours régulier"], correct: [1] },
+        { q: "59. Deux actions coexistent en délits :", options: ["exécutoire/attente", "civile/indemnitaire", "pénales et réipersécutoires", "formulaires/lapidaires"], correct: [2] },
+        { q: "60. La fides :", options: ["déesse de la paix", "accompagne l'essor des contrats consensuels", "crédit bancaire", "omniprésente dans les contrats réels"], correct: [1, 3] }
+    ];
+
+    function init() {
+        const content = document.getElementById('quiz-content');
+        quizData.forEach((item, index) => {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+            block.id = `block-${index}`;
+            
+            let optionsHtml = '';
+            item.options.forEach((opt, optIndex) => {
+                optionsHtml += `
+                    <label class="option" id="label-${index}-${optIndex}">
+                        <input type="checkbox" name="q${index}" value="${optIndex}" onchange="updateProgress()">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            block.innerHTML = `
+                <span class="question-text">${item.q}</span>
+                <div class="options-container">${optionsHtml}</div>
+                <div class="correction-note" id="note-${index}"></div>
+            `;
+            content.appendChild(block);
+        });
+    }
+
+    function updateProgress() {
+        const total = quizData.length;
+        let answered = 0;
+        for(let i=0; i<total; i++) {
+            if(document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+        }
+        const percent = Math.round((answered / total) * 100);
+        document.getElementById('progressFill').style.width = percent + "%";
+        document.getElementById('progress-text').innerText = percent + "%";
+    }
+
+    function validateQuiz() {
+        let score = 0;
+        quizData.forEach((item, index) => {
+            const block = document.getElementById(`block-${index}`);
+            const note = document.getElementById(`note-${index}`);
+            const selected = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(el => parseInt(el.value));
+            
+            const isCorrect = JSON.stringify(selected.sort()) === JSON.stringify(item.correct.sort());
+            
+            if (isCorrect) {
+                score++;
+                block.classList.add('bg-correct');
+                note.style.display = 'none';
+            } else {
+                block.classList.add('bg-wrong');
+                const corrects = item.correct.map(i => item.options[i]);
+                note.innerHTML = `<strong>Faux.</strong> Réponse attendue : <span class="text-correct">${corrects.join(' ET ')}</span>`;
+                note.style.display = 'block';
+            }
+
+            document.querySelectorAll(`input[name="q${index}"]`).forEach(input => input.disabled = true);
+
+            item.options.forEach((_, optIndex) => {
+                const label = document.getElementById(`label-${index}-${optIndex}`);
+                if (item.correct.includes(optIndex)) label.classList.add('text-correct');
+                else if (document.querySelector(`input[name="q${index}"][value="${optIndex}"]`).checked) label.classList.add('text-wrong');
+            });
+        });
+
+        const finalSection = document.getElementById('finalSection');
+        document.getElementById('scoreDisplay').innerText = `Score Final : ${score} / ${quizData.length}`;
+        document.getElementById('scoreMsg').innerText = score > 45 ? "Exceptionnel !" : "Continuez vos efforts.";
+        finalSection.style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    init();
+</script>
+
+</body>
+</html>
