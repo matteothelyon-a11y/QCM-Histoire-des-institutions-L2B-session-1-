@@ -3,46 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM Droit Romain - Master Edition</title>
+    <title>QCM Droit Romain - Master Pro v3</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Variables de couleurs - Thème Clair par défaut */
         :root {
-            --bg-color: #f0f2f5;
+            --bg-color: #f8fafc;
             --container-bg: #ffffff;
-            --text-color: #2c3e50;
-            --text-secondary: #1a1a1a;
-            --primary: #2c3e50;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --accent: #d4af37;
-            --success: #27ae60;
-            --error: #e74c3c;
-            --border-color: #eaeff2;
-            --card-hover: #f9f9f9;
-            --note-bg: #fff3e0;
+            --blue: #3b82f6;
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #e2e8f0;
         }
 
-        /* Variables de couleurs - Thème Sombre */
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-secondary: #ffffff;
-            --primary: #34495e;
-            --accent: #f1c40f;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --border-color: #333333;
-            --card-hover: #2a2a2a;
-            --note-bg: #3d2b1f;
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
         }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -50,260 +40,348 @@
             margin: 0 auto;
             background: var(--container-bg);
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        header {
-            text-align: center;
-            border-bottom: 2px solid var(--accent);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        /* Bouton Dark Mode */
-        .theme-toggle {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: none;
-            border: 2px solid var(--accent);
-            color: var(--accent);
-            padding: 5px 10px;
             border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .theme-toggle:hover {
-            background: var(--accent);
-            color: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Stats & Barre de progression */
-        .sticky-stats {
-            position: sticky;
-            top: 0;
-            background: var(--container-bg);
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            margin-bottom: 20px;
-        }
-
-        .stats-row {
+        /* Toolbar */
+        .toolbar {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: bold;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
 
-        .progress-bar-container {
-            background: #444;
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--success);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        /* Blocs Questions */
-        .question-block {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--container-bg);
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            display: block;
-            color: var(--text-secondary);
-        }
-
-        .option {
-            display: block;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
+        .btn-tool {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: 12px;
             cursor: pointer;
-            border: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: 0.2s;
         }
 
-        .option:hover { background: var(--card-hover); }
+        .btn-tool:hover { border-color: var(--accent); }
+        .btn-tool.active { background: var(--blue); color: white; border-color: var(--blue); }
 
-        /* Correction */
-        .text-correct { color: var(--success) !important; font-weight: bold; }
-        .text-wrong { color: var(--error) !important; font-weight: bold; }
-        .bg-correct { background-color: rgba(46, 204, 113, 0.15) !important; border-color: var(--success); }
-        .bg-wrong { background-color: rgba(231, 76, 60, 0.15) !important; border-color: var(--error); }
-
-        .correction-note {
-            margin-top: 15px;
-            padding: 10px;
-            background: var(--note-bg);
-            border-left: 4px solid var(--accent);
-            display: none;
+        /* Stats flottantes */
+        .header-stats {
+            position: sticky;
+            top: 15px;
+            background: var(--container-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
 
-        #submit-btn {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            height: 10px;
+            background: var(--border);
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Questions */
+        .q-card {
+            margin-bottom: 35px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
             display: block;
+        }
+
+        .opt-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .opt-label:hover { background: var(--bg-color); }
+        input[type="checkbox"] { width: 18px; height: 18px; margin-right: 12px; }
+
+        /* Correction */
+        .correct-ans { background: rgba(16, 185, 129, 0.1) !important; color: var(--success) !important; font-weight: bold; border-color: var(--success) !important; }
+        .wrong-ans { background: rgba(239, 68, 68, 0.1) !important; color: var(--error) !important; border-color: var(--error) !important; }
+
+        .note {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid var(--accent);
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        /* Boutons d'action */
+        #submit-btn {
             width: 100%;
             padding: 20px;
-            background: var(--accent);
-            color: #fff;
+            background: var(--text-main);
+            color: var(--container-bg);
             border: none;
-            border-radius: 10px;
-            font-size: 1.3rem;
-            font-weight: bold;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 800;
             cursor: pointer;
-            text-transform: uppercase;
+            margin-top: 20px;
+        }
+
+        /* Bouton retour en haut */
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: none;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 999;
         }
 
         .final-hero {
             display: none;
             text-align: center;
             padding: 40px;
-            background: var(--primary);
+            background: var(--text-main);
             color: white;
-            border-radius: 15px;
-            margin-top: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
 
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
 <div class="container">
-    <header>
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Mode Sombre</button>
-        <h1>Droit Romain : Examen Blanc</h1>
-        <p>60 Questions - Session Interactive</p>
+    <header style="text-align: center; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 1.8rem;">Droit Romain & Obligations</h1>
+        <p style="color: var(--text-muted);">Mode Révisions Intensives</p>
     </header>
 
-    <div class="sticky-stats">
-        <div class="stats-row">
-            <span>Progression : <span id="progress-text">0%</span></span>
-            <span>Temps : <span id="timer">00:00</span></span>
+    <div class="toolbar">
+        <button class="btn-tool" onclick="toggleTheme()" id="themeBtn">🌙 Mode Sombre</button>
+        <button class="btn-tool" onclick="toggleShuffle()" id="shuffleBtn">🔀 Aléatoire : OFF</button>
+        <button class="btn-tool" onclick="resetTimer()">⏱️ Reset Temps</button>
+        <button class="btn-tool" onclick="clearStorage()" style="color: var(--error);">🗑️ Effacer Progrès</button>
+    </div>
+
+    <div class="header-stats">
+        <div class="stats-grid">
+            <div>Progression : <span id="progressText">0%</span></div>
+            <div>Temps : <span id="timer">00:00</span></div>
+            <div>High Score : <span id="highScore">--</span>/60</div>
         </div>
-        <div class="progress-bar-container">
-            <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
     </div>
 
-    <form id="quiz-form">
-        <div id="quiz-content"></div>
-        <button type="button" id="submit-btn" onclick="validateQuiz()">Valider ma copie</button>
+    <form id="quizForm">
+        <div id="quizContent"></div>
+        <button type="button" id="submit-btn" onclick="submitExam()">Valider ma copie et voir le score</button>
     </form>
 
     <div id="finalHero" class="final-hero">
-        <h2 id="scoreTitle" style="font-size: 2.5rem;"></h2>
-        <p id="scoreSub" style="font-size: 1.2rem;"></p>
-        <button onclick="location.reload()" style="background: white; color: black; padding: 10px 20px; border-radius: 5px; cursor: pointer; border:none; font-weight:bold; margin-top:20px;">Recommencer</button>
+        <h2 id="finalScore" style="font-size: 3rem; margin: 0;"></h2>
+        <p id="finalMsg"></p>
+        <button onclick="location.reload()" style="background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 20px;">Recommencer</button>
     </div>
 </div>
 
-
-
 <script>
-    const rawData = [
-        { q: "1. Les vices du consentement en droit romain sont :", options: ["le dol (au sens de la faute lourde)", "le dol (au sens du mensonge)", "l'erreur (obstacle)", "la crainte révérencielle"], correct: [1, 2] },
-        { q: "2. En droit romain des obligations, le louage de services :", options: ["ne permet pas de recruter des ouvriers", "permet d'employer des esclaves", "permet de recruter un avocat", "ne permet pas d'engager un avocat"], correct: [1, 3] },
-        { q: "3. Le proto-consensualisme de l'époque féodale :", options: ["est un retour au consensualisme archaïque", "correspond à un engagement par promesse", "marque une tendance à la laïcisation", "pratique résiduelle « contracta »"], correct: [1, 2] },
-        { q: "4. La stipulatio :", options: ["forme de promesse (fides facta)", "a donné naissance à la sponsio", "mode basé sur un serment", "clause de résolution"], correct: [0, 2] },
-        { q: "5. En droit romain, la sponsio :", options: ["sponsorise les clients", "contrat réel", "interrogation orale solennelle", "base de la stipulatio"], correct: [2, 3] },
-        { q: "6. Le mutuum est :", options: ["sanctionné moralement", "contrat consensuel", "prêt de consommation", "prêt à la consommation"], correct: [2, 3] },
-        { q: "7. Le préteur à Rome :", options: ["pontife", "magistrat qui fixe le procès", "juge du fond", "prêteur d'argent"], correct: [1] },
-        { q: "8. La loi Poetalia Papiria distingue :", options: ["contrat et délit", "indemnité et amende", "contrainte physique/morale", "obligé et obligation"], correct: [3] },
-        { q: "9. En droit romain, la fiducie :", options: ["essor consensuel", "identique au trust", "personne de confiance", "dérive de la loyauté (contrats réels)"], correct: [3] },
-        { q: "10. Action « de pauperie », le propriétaire peut :", options: ["dommages-intérêts", "exil", "abandon noxal", "abandon du fils"], correct: [0, 2] },
-        { q: "11. Délit d'injuria étendu par le préteur :", options: ["quasi-délits", "sacrilège", "atteintes morales", "lèse-majesté"], correct: [2] },
-        { q: "12. Délits époque franque, on s'intéresse à :", options: ["pas l'intention", "matériel", "intention > matériel", "autant aux deux"], correct: [0, 1] },
-        { q: "13. Le Digeste :", options: ["Dioclétien", "Archaïque", "Justinien (VIe s.)", "École de pensée"], correct: [2] },
-        { q: "14. À Rome, le foenus :", options: ["taux réduit", "prêt consommation", "prêt à intérêt", "similaire mutuum"], correct: [2, 3] },
-        { q: "15. Principe du Digeste :", options: ["mort du coupable = fin action publique", "action suit le coupable", "mort commence avec crime", "crime cesse avec peine"], correct: [0] },
-        { q: "16. Origine noxalité :", options: ["individuelle", "archaïque", "droit de s'emparer du coupable", "venger la perte"], correct: [1, 2] },
-        { q: "17. Renaissance droit romain :", options: ["monastères", "canonistes", "imprimerie", "change mœurs"], correct: [1] },
-        { q: "18. Le id quod interest :", options: ["différent quanti ea res", "barème", "calcul taux", "intérêt à éviter dommage"], correct: [3] },
-        { q: "19. Contrat de societas :", options: ["bénéfice au fondateur", "consensuel", "pratique commerciale", "prolongement paterfamilias"], correct: [1, 3] },
-        { q: "20. Irresponsabilité délictuelle :", options: ["10 ans", "opium", "femme", "impubère"], correct: [3] },
-        { q: "21. Bas Moyen Âge, romanistes/canonistes :", options: ["nécessité", "légitime défense", "rôle intention", "causalité"], correct: [2] },
-        { q: "22. Prêt à intérêt :", options: ["nauticum foenus", "interdit pontifes", "10 commandements", "mutuum initial"], correct: [0] },
-        { q: "23. Vices cachés :", options: ["exécution", "utilité", "violence", "pas une lésion"], correct: [3] },
-        { q: "24. Avant Poetalia Papiria :", options: ["nexum", "solo consensu", "locatio", "mandat"], correct: [0] },
-        { q: "25. Saint Ambroise :", options: ["volonté", "faute lourde", "responsable/non coupable", "pas de responsabilité sans faute"], correct: [3] },
-        { q: "26. Laïcisation obligations :", options: ["synthèse civil/naturel", "plus de serment", "code européen", "réduction tribunaux Église"], correct: [3] },
-        { q: "27. Wergeld :", options: ["mercenaire", "composition homicide", "contrepartie", "main-d'œuvre"], correct: [1] },
-        { q: "28. Fiducie classique :", options: ["trust", "consensuel", "retour propriété", "crédit impôt"], correct: [2] },
-        { q: "29. Libre arbitre (Bas MA) :", options: ["sui generis", "hérésies", "bonnes mœurs", "responsabilité"], correct: [2, 3] },
-        { q: "30. Action d'injuria :", options: ["1 mois", "1 an", "transmissible héritiers (victime)", "transmissible (auteur)"], correct: [1] },
-        { q: "31. Abandon noxal :", options: ["considération animal", "droit romain", "fils/esclave", "idée canonique"], correct: [1, 2] },
-        { q: "32. Serment promissoire :", options: ["réel", "formaliste franque", "procureurs", "gestes"], correct: [1] },
-        { q: "33. Notion de vol :", options: ["furtum (chose)", "pas escroquerie", "plus large que moderne", "abus confiance/usage"], correct: [2, 3] },
-        { q: "34. Procès romain :", options: ["3 étapes", "juge accorde action", "préteur tranche", "in jure / apud iudicem"], correct: [3] },
-        { q: "35. Injuria :", options: ["blessure physique", "sorcellerie", "tort animaux", "adultère"], correct: [0] },
-        { q: "36. Répression franque :", options: ["roi seul", "pas vengeance", "autorité intervient peu", "talion seul"], correct: [2] },
-        { q: "37. Serment Moyen Âge :", options: ["juge dispense", "ariens", "Dieu témoin", "perpétuel"], correct: [2] },
-        { q: "38. Prêt production :", options: ["maritime", "commodatum", "sans intérêt", "outil"], correct: [0, 3] },
-        { q: "39. Societas :", options: ["personne morale", "limitée apports", "commun apports", "pas intuitu personae"], correct: [2] },
-        { q: "40. Cause (Bas MA) :", options: ["moralité", "forme", "objet", "bonne cause"], correct: [0, 3] },
-        { q: "41. Vices cachés :", options: ["édiles curules", "renonce vendeur", "amiable", "organes"], correct: [0] },
-        { q: "42. XII Tables :", options: ["corruption", "bannum", "lésions corporelles", "sorcellerie"], correct: [2, 3] },
-        { q: "43. Expensilatio :", options: ["littéral", "agricole", "expansion", "mandat"], correct: [0] },
-        { q: "44. Droit savant (XIIIe) :", options: ["consentement", "anti-canon", "huissiers", "Philippe le Bel"], correct: [0] },
-        { q: "45. Louage :", options: ["terres soldats", "expansion urbaine", "abusus", "pas ouvrage futur"], correct: [1] },
-        { q: "46. Fin vengeance :", options: ["talion interdit", "poena vs rei persecurio", "civil/commercial", "plus d'indemnités"], correct: [1, 3] },
-        { q: "47. Serment simplifié :", options: ["réel", "corporaliter", "touche chose sainte", "pas nom Dieu"], correct: [1, 2] },
-        { q: "48. Société franque :", options: ["terre secondaire", "pas parents", "débits=vente", "distinction contrats/délits"], correct: [3] },
-        { q: "49. Inquisitoire (XIIIe) :", options: ["sanction civile", "peine vs dommages", "fusion", "assimilation"], correct: [1] },
-        { q: "50. Nexum :", options: ["maritime", "per aes et libram", "noxalité", "consensuel"], correct: [1] },
-        { q: "51. Mutuum :", options: ["faible valeur", "res mancipi", "famille", "consensuel"], correct: [0] },
-        { q: "52. Délit civil :", options: ["paie somme", "tarif légal", "interrogé", "infamie"], correct: [1, 3] },
-        { q: "53. Simple promesse :", options: ["contourne", "pas obligation", "objet", "consensualisme"], correct: [3] },
-        { q: "54. Legis Aquiliae :", options: ["unilatérale", "administrative", "privée", "pénale double"], correct: [2, 3] },
-        { q: "55. Jurisprudence :", options: ["jurisconsultes", "coutume", "préteur", "tribun"], correct: [0] },
-        { q: "56. Seul dommage compensé :", options: ["incendie", "écroulement voisin", "vol", "empoisonnement"], correct: [1] },
-        { q: "57. XII Tables :", options: ["pudeur", "soufflets (amende)", "vie privée", "pas préjudice"], correct: [1] },
-        { q: "58. Dépôt :", options: ["témoin", "bon état", "formel", "régulier"], correct: [1] },
-        { q: "59. Deux actions :", options: ["exécutoire", "indemnitaire", "pénales/réipersécutoires", "lapidaires"], correct: [2] },
-        { q: "60. Fides :", options: ["paix", "consensuels", "banque", "réels"], correct: [1, 3] }
+    const originalData = [
+        { q: "Les vices du consentement en droit romain sont :", options: ["le dol (au sens de la faute lourde)", "le dol (au sens du mensonge)", "l'erreur (obstacle)", "la crainte révérencielle"], correct: [1, 2] },
+        { q: "En droit romain des obligations, le louage de services :", options: ["ne permet pas de recruter des ouvriers", "permet d'employer des esclaves", "permet de recruter un avocat", "ne permet pas d'engager un avocat"], correct: [1, 3] },
+        { q: "Le proto-consensualisme de l'époque féodale :", options: ["est un retour au consensualisme archaïque", "correspond à un engagement par promesse", "marque une tendance à la laïcisation", "pratique résiduelle « contracta »"], correct: [1, 2] },
+        { q: "La stipulatio :", options: ["forme de promesse (fides facta)", "a donné naissance à la sponsio", "mode basé sur un serment", "clause de résolution"], correct: [0, 2] },
+        { q: "En droit romain, la sponsio :", options: ["sponsorise les clients", "contrat réel", "interrogation orale solennelle", "base de la stipulatio"], correct: [2, 3] },
+        { q: "Le mutuum est :", options: ["sanctionné moralement", "contrat consensuel", "prêt de consommation", "prêt à la consommation"], correct: [2, 3] },
+        { q: "Le préteur à Rome :", options: ["pontife", "magistrat qui fixe le procès", "juge du fond", "prêteur d'argent"], correct: [1] },
+        { q: "La loi Poetalia Papiria distingue :", options: ["contrat et délit", "indemnité et amende", "contrainte physique/morale", "obligé et obligation"], correct: [3] },
+        { q: "En droit romain, la fiducie :", options: ["essor consensuel", "identique au trust", "personne de confiance", "dérive de la loyauté (contrats réels)"], correct: [3] },
+        { q: "Dans l'ancien droit pénal, face à l'action « de pauperie », le propriétaire peut :", options: ["verser des dommages-intérêts", "payer l'amende ou s'exiler", "effectuer un abandon noxal", "abandonner le fils de famille"], correct: [0, 2] },
+        { q: "En droit romain, le délit d'injuria a été étendu par le préteur :", options: ["aux quasi-délits", "au sacrilège", "aux atteintes morales", "au crime de lèse-majesté"], correct: [2] },
+        { q: "En matière de délits à l'époque franque :", options: ["on ne s'intéresse pas à l'élément intentionnel", "on s'intéresse à l'élément matériel", "on s'intéresse plus à l'intention qu'au matériel", "on s'intéresse autant aux deux"], correct: [0, 1] },
+        { q: "Le Digeste :", options: ["Dioclétien", "Archaïque", "Justinien (VIe s.)", "École de pensée"], correct: [2] },
+        { q: "À Rome, le foenus désigne :", options: ["taux réduit", "prêt consommation", "prêt à intérêt", "similaire mutuum"], correct: [2, 3] },
+        { q: "Selon un principe du Digeste :", options: ["mort du coupable = fin action publique", "action suit le coupable", "« La mort commence avec le crime »", "« Le crime cesse avec la peine »"], correct: [0] },
+        { q: "À Rome, l'origine de la noxalité se situe :", options: ["individuelle", "archaïque", "droit de s'emparer du coupable", "venger la perte"], correct: [1, 2] },
+        { q: "La renaissance de l'étude du droit romain en Europe :", options: ["monastères", "canonistes", "imprimerie", "change mœurs"], correct: [1] },
+        { q: "Le id quod interest :", options: ["différent quanti ea res", "barème", "calcul taux", "intérêt à éviter dommage"], correct: [3] },
+        { q: "Contrat de societas :", options: ["bénéfice au fondateur", "consensuel", "pratique commerciale", "prolongement paterfamilias"], correct: [1, 3] },
+        { q: "Irresponsabilité délictuelle :", options: ["10 ans", "opium", "femme", "impubère"], correct: [3] },
+        { q: "Bas Moyen Âge, romanistes/canonistes :", options: ["nécessité", "légitime défense", "rôle intention", "causalité"], correct: [2] },
+        { q: "Prêt à intérêt :", options: ["nauticum foenus", "interdit pontifes", "10 commandements", "mutuum initial"], correct: [0] },
+        { q: "Vices cachés :", options: ["exécution", "utilité", "violence", "pas une lésion"], correct: [3] },
+        { q: "Avant Poetalia Papiria :", options: ["nexum", "solo consensu", "locatio", "mandat"], correct: [0] },
+        { q: "Selon saint Ambroise :", options: ["volonté", "faute lourde", "responsable/non coupable", "pas de responsabilité sans faute"], correct: [3] },
+        { q: "La laïcisation obligations :", options: ["synthèse civil/naturel", "plus de serment", "code européen", "réduction tribunaux Église"], correct: [3] },
+        { q: "Wergeld :", options: ["mercenaire", "composition homicide", "contrepartie", "main-d'œuvre"], correct: [1] },
+        { q: "Fiducie classique :", options: ["trust", "consensuel", "retour propriété", "crédit impôt"], correct: [2] },
+        { q: "Libre arbitre (Bas MA) :", options: ["sui generis", "hérésies", "bonnes mœurs", "responsabilité"], correct: [2, 3] },
+        { q: "Action d'injuria :", options: ["1 mois", "1 an", "transmissible héritiers (victime)", "transmissible (auteur)"], correct: [1] },
+        { q: "Abandon noxal :", options: ["considération animal", "droit romain", "fils/esclave", "idée canonique"], correct: [1, 2] },
+        { q: "Serment promissoire :", options: ["réel", "formaliste franque", "procureurs", "gestes"], correct: [1] },
+        { q: "Notion de vol :", options: ["furtum (chose)", "pas escroquerie", "plus large que moderne", "abus confiance/usage"], correct: [2, 3] },
+        { q: "Procès romain :", options: ["3 étapes", "juge accorde action", "préteur tranche", "in jure / apud iudicem"], correct: [3] },
+        { q: "Injuria :", options: ["blessure physique", "sorcellerie", "tort animaux", "adultère"], correct: [0] },
+        { q: "Répression franque :", options: ["roi seul", "pas vengeance", "autorité intervient peu", "talion seul"], correct: [2] },
+        { q: "Serment Moyen Âge :", options: ["juge dispense", "ariens", "Dieu témoin", "perpétuel"], correct: [2] },
+        { q: "Prêt production :", options: ["maritime", "commodatum", "sans intérêt", "outil"], correct: [0, 3] },
+        { q: "Societas :", options: ["personne morale", "limitée apports", "commun apports", "pas intuitu personae"], correct: [2] },
+        { q: "Cause (Bas MA) :", options: ["moralité", "forme", "objet", "bonne cause"], correct: [0, 3] },
+        { q: "Vices cachés :", options: ["édiles curules", "renonce vendeur", "amiable", "organes"], correct: [0] },
+        { q: "XII Tables :", options: ["corruption", "bannum", "lésions corporelles", "sorcellerie"], correct: [2, 3] },
+        { q: "Expensilatio :", options: ["littéral", "agricole", "expansion", "mandat"], correct: [0] },
+        { q: "Droit savant (XIIIe) :", options: ["consentement", "anti-canon", "huissiers", "Philippe le Bel"], correct: [0] },
+        { q: "Louage :", options: ["terres soldats", "expansion urbaine", "abusus", "pas ouvrage futur"], correct: [1] },
+        { q: "Fin vengeance :", options: ["talion interdit", "poena vs rei persecurio", "civil/commercial", "plus d'indemnités"], correct: [1, 3] },
+        { q: "Serment simplifié :", options: ["réel", "corporaliter", "touche chose sainte", "pas nom Dieu"], correct: [1, 2] },
+        { q: "Société franque :", options: ["terre secondaire", "pas parents", "débits=vente", "distinction contrats/délits"], correct: [3] },
+        { q: "Inquisitoire (XIIIe) :", options: ["sanction civile", "peine vs dommages", "fusion", "assimilation"], correct: [1] },
+        { q: "Nexum :", options: ["maritime", "per aes et libram", "noxalité", "consensuel"], correct: [1] },
+        { q: "Mutuum :", options: ["faible valeur", "res mancipi", "famille", "consensuel"], correct: [0] },
+        { q: "Délit civil :", options: ["paie somme", "tarif légal", "interrogé", "infamie"], correct: [1, 3] },
+        { q: "Simple promesse :", options: ["contourne", "pas obligation", "objet", "consensualisme"], correct: [3] },
+        { q: "Legis Aquiliae :", options: ["unilatérale", "administrative", "privée", "pénale double"], correct: [2, 3] },
+        { q: "Jurisprudence :", options: ["jurisconsultes", "coutume", "préteur", "tribun"], correct: [0] },
+        { q: "Seul dommage compensé :", options: ["incendie", "écroulement voisin", "vol", "empoisonnement"], correct: [1] },
+        { q: "XII Tables (détails) :", options: ["pudeur", "soufflets (amende)", "vie privée", "pas préjudice"], correct: [1] },
+        { q: "Dépôt :", options: ["témoin", "bon état", "formel", "régulier"], correct: [1] },
+        { q: "Deux actions coexistent :", options: ["exécutoire", "indemnitaire", "pénales/réipersécutoires", "lapidaires"], correct: [2] },
+        { q: "Fides :", options: ["paix", "consensuels", "banque", "réels"], correct: [1, 3] }
     ];
 
-    // Mélange et Initialisation
-    const quizData = rawData.sort(() => Math.random() - 0.5);
-    let startTime = Date.now();
+    let isShuffle = false;
+    let startTime = parseInt(localStorage.getItem('startTime')) || Date.now();
+    let currentOrder = [...originalData];
 
     function init() {
-        // Appliquer le thème sauvegardé
+        // Restaurer thême et record
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeBtn(savedTheme);
+        document.getElementById('highScore').innerText = localStorage.getItem('highScore') || "--";
 
-        const content = document.getElementById('quiz-content');
-        quizData.forEach((item, idx) => {
-            const div = document.createElement('div');
-            div.className = 'question-block';
-            div.id = `block-${idx}`;
-            div.innerHTML = `
-                <span class="question-text">${idx+1}. ${item.q}</span>
-                ${item.options.map((opt, i) => `
-                    <label class="option" id="label-${idx}-${i}">
-                        <input type="checkbox" name="q${idx}" value="${i}" onchange="updateProgress()"> ${opt}
-                    </label>
-                `).join('')}
-                <div class="correction-note" id="note-${idx}"></div>
-            `;
-            content.appendChild(div);
-        });
+        if(!localStorage.getItem('startTime')) localStorage.setItem('startTime', startTime);
 
+        renderQuestions();
         setInterval(updateTimer, 1000);
+        window.onscroll = () => {
+            document.getElementById('backToTop').style.display = window.scrollY > 400 ? "block" : "none";
+        };
+    }
+
+    function renderQuestions() {
+        const content = document.getElementById('quizContent');
+        content.innerHTML = "";
+        if(isShuffle) currentOrder.sort(() => Math.random() - 0.5);
+
+        currentOrder.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = `q-${idx}`;
+            
+            // Restaurer les réponses sauvegardées
+            const savedAns = JSON.parse(localStorage.getItem(`ans-${item.q}`)) || [];
+
+            card.innerHTML = `
+                <span class="q-text">${idx+1}. ${item.q}</span>
+                ${item.options.map((opt, i) => {
+                    const checked = savedAns.includes(i) ? "checked" : "";
+                    return `
+                    <label class="opt-label" id="label-${idx}-${i}">
+                        <input type="checkbox" name="q${idx}" value="${i}" ${checked} onchange="saveAnswer('${item.q}', ${i})"> ${opt}
+                    </label>`;
+                }).join('')}
+                <div class="note" id="note-${idx}"></div>
+            `;
+            content.appendChild(card);
+        });
+        updateProgress();
+    }
+
+    function saveAnswer(qKey, val) {
+        let saved = JSON.parse(localStorage.getItem(`ans-${qKey}`)) || [];
+        if(saved.includes(val)) saved = saved.filter(x => x !== val);
+        else saved.push(val);
+        localStorage.setItem(`ans-${qKey}`, JSON.stringify(saved));
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const total = originalData.length;
+        let answered = 0;
+        originalData.forEach(item => {
+            if((JSON.parse(localStorage.getItem(`ans-${item.q}`)) || []).length > 0) answered++;
+        });
+        const pct = Math.round((answered/total)*100);
+        document.getElementById('progressBar').style.width = pct + "%";
+        document.getElementById('progressText').innerText = pct + "%";
+    }
+
+    function resetTimer() {
+        startTime = Date.now();
+        localStorage.setItem('startTime', startTime);
+    }
+
+    function updateTimer() {
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(diff/60)).padStart(2, '0');
+        const s = String(diff%60).padStart(2, '0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
+    }
+
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        document.getElementById('shuffleBtn').classList.toggle('active');
+        document.getElementById('shuffleBtn').innerText = isShuffle ? "🔀 Aléatoire : ON" : "🔀 Aléatoire : OFF";
+        renderQuestions();
     }
 
     function toggleTheme() {
@@ -311,69 +389,50 @@
         const next = current === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
-        updateThemeBtn(next);
     }
 
-    function updateThemeBtn(theme) {
-        document.getElementById('themeBtn').innerText = theme === 'dark' ? '☀️ Mode Clair' : '🌙 Mode Sombre';
-    }
-
-    function updateTimer() {
-        const delta = Math.floor((Date.now() - startTime) / 1000);
-        const m = String(Math.floor(delta / 60)).padStart(2, '0');
-        const s = String(delta % 60).padStart(2, '0');
-        document.getElementById('timer').innerText = `${m}:${s}`;
-    }
-
-    function updateProgress() {
-        let count = 0;
-        for(let i=0; i<quizData.length; i++) {
-            if(document.querySelector(`input[name="q${i}"]:checked`)) count++;
+    function clearStorage() {
+        if(confirm("Effacer toutes vos réponses et votre record ?")) {
+            localStorage.clear();
+            location.reload();
         }
-        const pct = Math.round((count/quizData.length)*100);
-        document.getElementById('progressFill').style.width = pct + "%";
-        document.getElementById('progress-text').innerText = pct + "%";
     }
 
-    function validateQuiz() {
+    function submitExam() {
         let score = 0;
-        quizData.forEach((item, idx) => {
-            const block = document.getElementById(`block-${idx}`);
-            const note = document.getElementById(`note-${idx}`);
-            const selected = Array.from(document.querySelectorAll(`input[name="q${idx}"]:checked`)).map(el => parseInt(el.value));
+        currentOrder.forEach((item, idx) => {
+            const card = document.getElementById(`q-${idx}`);
+            const selected = Array.from(card.querySelectorAll('input:checked')).map(i => parseInt(i.value));
             const isCorrect = JSON.stringify(selected.sort()) === JSON.stringify(item.correct.sort());
 
-            if(isCorrect) {
-                score++;
-                block.classList.add('bg-correct');
-            } else {
-                block.classList.add('bg-wrong');
-                note.style.display = 'block';
+            if(isCorrect) score++;
+            else {
+                card.classList.add('bg-wrong');
+                const note = document.getElementById(`note-${idx}`);
+                note.style.display = "block";
                 note.innerHTML = `<strong>Correction :</strong> ${item.correct.map(i => item.options[i]).join(' & ')}`;
             }
 
             item.options.forEach((_, i) => {
                 const lbl = document.getElementById(`label-${idx}-${i}`);
-                if(item.correct.includes(i)) lbl.classList.add('text-correct');
-                else if(document.querySelector(`input[name="q${idx}"][value="${i}"]`).checked) lbl.classList.add('text-wrong');
-                document.querySelectorAll(`input[name="q${idx}"]`).forEach(inp => inp.disabled = true);
+                if(item.correct.includes(i)) lbl.classList.add('correct-ans');
+                else if(card.querySelector(`input[value="${i}"]:checked`)) lbl.classList.add('wrong-ans');
             });
         });
 
-        const hero = document.getElementById('finalHero');
-        hero.style.display = 'block';
-        document.getElementById('scoreTitle').innerText = `Score : ${score} / ${quizData.length}`;
-        
-        if(score === quizData.length) {
-            document.getElementById('scoreSub').innerText = "PERFECT ! FEUX D'ARTIFICE !";
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        } else {
-            document.getElementById('scoreSub').innerText = "Révisez vos classiques et recommencez !";
+        const high = parseInt(localStorage.getItem('highScore')) || 0;
+        if(score > high) localStorage.setItem('highScore', score);
+
+        document.getElementById('finalHero').style.display = "block";
+        document.getElementById('finalScore').innerText = `${score} / 60`;
+        if(score === 60) {
+            confetti({particleCount: 200, spread: 70, origin: {y: 0.6}});
+            document.getElementById('finalMsg').innerText = "MAÎTRISE TOTALE !";
         }
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
     }
 
-    init();
+    window.onload = init;
 </script>
 </body>
 </html>
